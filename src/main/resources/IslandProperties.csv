@@ -1,0 +1,5 @@
+﻿property,
+x_amount_of_cells,100
+y_amount_of_cells,20
+day_duration_ms,3000
+plants_growth_factor,1.2

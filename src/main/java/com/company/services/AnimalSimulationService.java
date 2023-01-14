@@ -1,6 +1,7 @@
 package com.company.services;
 
 import com.company.animals.Animal;
+import com.company.animals.AnimalType;
 import com.company.config.parsers.AnimalFieldsParser;
 import com.company.island.Island;
 
@@ -15,6 +16,7 @@ public class AnimalSimulationService implements Runnable {
             IslandSimulationService.stopSimulation();
         }
         Island.getAllAnimals().forEach(this::dealWithCorpses);
+        dealWithCaterpillars();
         runAnimalLifeCycle();
         setBirthdaysForNewAnimals();
         StatsPrinter.printDayStats();
@@ -33,6 +35,13 @@ public class AnimalSimulationService implements Runnable {
         if (animal.getCorpseLifeCounter() > 1) {
             eraseExpiredAnimalCorpse(animal);
         }
+    }
+
+    private void dealWithCaterpillars() {
+        Island.getAllAnimals().stream()
+                .filter(animal -> animal.getType() == AnimalType.CATERPILLAR)
+                .filter(animal -> animal.getCell().getPlants() == 0)
+                .forEach(Animal::die);
     }
 
     private void eraseExpiredAnimalCorpse(Animal animal) {

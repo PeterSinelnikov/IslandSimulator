@@ -30,7 +30,7 @@ public class StatsPrinter {
                 .filter(animal -> animal.getCorpseLifeCounter() == 0)
                 .filter(animal -> animal.getOffenderName() != null)
                 .count();
-        System.out.printf("animals killed by carnivores: %s\n", killedAnimals);
+        System.out.printf("animals killed by carnivores and omnivores: %s\n", killedAnimals);
     }
 
     private static void printFailedAttemptsToKill() {

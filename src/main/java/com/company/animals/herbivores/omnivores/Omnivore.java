@@ -18,9 +18,9 @@ public abstract class Omnivore extends Herbivore {
     @Override
     public void eat() {
         super.eat();
-        cell.getAnimals().stream()
+        getCell().getAnimals().stream()
                 .filter(victimAnimal -> AttackingPropParser.getInstance()
-                        .getAttackingProperty(this.type, victimAnimal.getType()) > 0)
+                        .getAttackingProperty(this.getType(), victimAnimal.getType()) > 0)
                 .findAny()
                 .ifPresent(this::tryToKill);
     }
@@ -28,11 +28,11 @@ public abstract class Omnivore extends Herbivore {
     private void tryToKill(Animal victimAnimal) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double attackingProperty = AttackingPropParser.getInstance()
-                .getAttackingProperty(this.type, victimAnimal.getType());
+                .getAttackingProperty(this.getType(), victimAnimal.getType());
         victimAnimal.setOffenderName(this);
         if (random.nextDouble() < attackingProperty) {
             victimAnimal.die();
-            weight = weight + victimAnimal.getWeight();
+            this.setWeight(getWeight() + victimAnimal.getWeight());
             victimAnimal.setWeight(0);
         }
     }

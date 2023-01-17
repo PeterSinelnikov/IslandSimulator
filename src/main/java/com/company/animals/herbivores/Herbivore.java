@@ -17,22 +17,22 @@ public abstract class Herbivore extends Animal {
     @Override
     protected Cell chooseWhereToGo(List<Cell> availableCellsToGo) {
         return availableCellsToGo.stream()
-                .filter(cell1 -> cell1.countType(type) < maxAmountPerCell)
+                .filter(cell1 -> cell1.countType(this.getType()) < getMaxAmountPerCell())
                 .filter(cell2 -> !cell2.containsCarnivore())
                 .max(Comparator.comparingInt(Cell::getPlants))
-                .orElseGet(() -> this.cell);
+                .orElseGet(this::getCell);
     }
 
     @Override
     public void eat() {
         int currentCellPlants = this.getCell().getPlants();
-        if (currentCellPlants > requiredAmountOfFood) {
-            this.cell.setPlants((int) (currentCellPlants - requiredAmountOfFood));
-            this.weight = AnimalFieldsParser.getInstance().getWeight(this.type);
+        if (currentCellPlants > getRequiredAmountOfFood()) {
+            this.getCell().setPlants((int) (currentCellPlants - getRequiredAmountOfFood()));
+            this.setWeight(AnimalFieldsParser.getInstance().getWeight(this.getType()));
         } else {
-            double weightLoss = (requiredAmountOfFood - currentCellPlants) / requiredAmountOfFood * maxDailyWeightLoss;
-            this.weight = weight - weightLoss;
-            this.cell.setPlants(0);
+            double weightLoss = (getRequiredAmountOfFood() - currentCellPlants) / getRequiredAmountOfFood() * getMaxDailyWeightLoss();
+            this.setWeight(getWeight() - weightLoss);
+            this.getCell().setPlants(0);
         }
     }
 }

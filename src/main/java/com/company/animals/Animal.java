@@ -13,20 +13,23 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Animal {
     @Getter
-    protected AnimalType type;
+    private final AnimalType type;
     @Getter
     @Setter
-    protected double weight;
-    protected int maxAmountPerCell;
+    private double weight;
+    @Getter
+    private int maxAmountPerCell;
     private int speed;
     private boolean isAlive = true;
     @Getter
     @Setter
     private int corpseLifeCounter;
-    protected double requiredAmountOfFood;
-    protected double maxDailyWeightLoss;
     @Getter
-    protected Cell cell;
+    private double requiredAmountOfFood;
+    @Getter
+    private double maxDailyWeightLoss;
+    @Getter
+    private Cell cell;
     private boolean hasOffspring;
     private boolean isMale;
     @Getter

@@ -5,6 +5,8 @@ import com.company.animals.AnimalType;
 import com.company.config.properties.AnimalProperties;
 import com.company.island.Island;
 
+import java.util.List;
+
 public class AnimalDaySimulation implements Runnable {
 
     public static final double MAX_WEIGHT_LOSS = 0.70;
@@ -12,20 +14,15 @@ public class AnimalDaySimulation implements Runnable {
     @Override
     public void run() {
         Initializer.dayCounter++;
-        if (Island.getAllAnimals().size() < 2) {
+        Island.getAllAnimals().forEach(this::dealWithCorpses);
+        List<Animal> allAnimals = Island.getAllAnimals();
+        if (allAnimals.size() < 2) {
             IslandSimulationService.stopSimulation();
         }
-        Island.getAllAnimals().forEach(this::dealWithCorpses);
-        dealWithCaterpillars();
-        runAnimalLifeCycle();
-        setBirthdaysForNewAnimals();
+        dealWithCaterpillars(allAnimals);
+        runAnimalLifeCycle(allAnimals);
+        setBirthdaysForNewAnimals(allAnimals);
         StatsPrinter.printDayStats();
-    }
-
-    private void setBirthdaysForNewAnimals() {
-        Island.getAllAnimals().stream()
-                .filter(animal -> animal.getBirthDay() == 0)
-                .forEach(animal -> animal.setBirthDay(Initializer.dayCounter));
     }
 
     private void dealWithCorpses(Animal animal) {
@@ -37,19 +34,19 @@ public class AnimalDaySimulation implements Runnable {
         }
     }
 
-    private void dealWithCaterpillars() {
-        Island.getAllAnimals().stream()
+    private void eraseExpiredAnimalCorpse(Animal animal) {
+        animal.getCell().getAnimals().remove(animal);
+    }
+
+    private void dealWithCaterpillars(List<Animal> allAnimals) {
+        allAnimals.stream()
                 .filter(animal -> animal.getType() == AnimalType.CATERPILLAR)
                 .filter(animal -> animal.getCell().getPlants() == 0)
                 .forEach(Animal::die);
     }
 
-    private void eraseExpiredAnimalCorpse(Animal animal) {
-        animal.getCell().getAnimals().remove(animal);
-    }
-
-    private void runAnimalLifeCycle() {
-        Island.getAllAnimals().stream()
+    private void runAnimalLifeCycle(List<Animal> allAnimals) {
+        allAnimals.stream()
                 .filter(this::checkLifeCondition)
                 .forEach(animal -> {
                     animal.eat();
@@ -65,5 +62,11 @@ public class AnimalDaySimulation implements Runnable {
             animal.die();
         }
         return !animal.isDead();
+    }
+
+    private void setBirthdaysForNewAnimals(List<Animal> allAnimals) {
+        allAnimals.stream()
+                .filter(animal -> animal.getBirthDay() == 0)
+                .forEach(animal -> animal.setBirthDay(Initializer.dayCounter));
     }
 }

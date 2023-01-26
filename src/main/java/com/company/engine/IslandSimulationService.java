@@ -29,7 +29,7 @@ public class IslandSimulationService {
     protected static void stopSimulation() {
         PLANTS_EXECUTOR.shutdown();
         ANIMALS_EXECUTOR.shutdown();
-        System.out.println("The last animal on the Island is " + Island.getAllAnimals().get(0));
+        System.out.println("Simulation is over. The last animal on the Island is " + Island.getAllAnimals().get(0));
     }
 
 }

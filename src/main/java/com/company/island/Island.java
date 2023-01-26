@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public class Island {
     @Getter
@@ -15,14 +14,12 @@ public class Island {
     private static int yAmountOfCells;
     @Getter
     private static Cell[][] cells;
-    private static List<List<Animal>> allAnimalsList;
 
     private Island() {}
 
     public static void initializeIsland() {
         initializeIslandSize();
         initializeCells();
-        initializeAllAnimalsList();
         initializePlants();
     }
 
@@ -40,13 +37,6 @@ public class Island {
         }
     }
 
-    private static void initializeAllAnimalsList() {
-        allAnimalsList = Arrays.stream(cells)
-                .flatMap(Arrays::stream)
-                .map(Cell::getAnimals)
-                .collect(Collectors.toList());
-    }
-
     private static void initializePlants() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Arrays.stream(cells)
@@ -55,7 +45,10 @@ public class Island {
     }
 
     public static List<Animal> getAllAnimals() {
-        return allAnimalsList.stream()
+        return Arrays.stream(cells)
+                .parallel()
+                .flatMap(Arrays::stream)
+                .map(Cell::getAnimals)
                 .flatMap(Collection::stream)
                 .toList();
     }

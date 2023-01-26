@@ -50,7 +50,6 @@ public abstract class Animal {
         Cell chosenCell = chooseWhereToGo(availableCellsToGo);
         if (chosenCell != currentCell) {
             this.cell = chosenCell;
-            // правильно ли синхронизироваться по листу?
             synchronized (currentCell.getAnimals()) {
                 currentCell.getAnimals().remove(this);
             }

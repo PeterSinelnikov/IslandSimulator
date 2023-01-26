@@ -4,8 +4,12 @@ import com.company.animals.AnimalType;
 import com.company.island.Cell;
 
 public class Duck extends Omnivore {
-    public Duck(Cell cell, AnimalType type) {
-        super(cell, type);
+    public Duck(Cell cell) {
+        super(cell);
+    }
+    @Override
+    public AnimalType getType() {
+        return AnimalType.DUCK;
     }
 
     @Override

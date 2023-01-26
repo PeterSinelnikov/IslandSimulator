@@ -4,8 +4,13 @@ import com.company.animals.AnimalType;
 import com.company.island.Cell;
 
 public class Caterpillar extends Herbivore{
-    public Caterpillar(Cell cell, AnimalType type) {
-        super(cell, type);
+    public Caterpillar(Cell cell) {
+        super(cell);
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.CATERPILLAR;
     }
 
     @Override

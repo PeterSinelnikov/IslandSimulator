@@ -1,7 +1,7 @@
 package com.company.island;
 
 import com.company.animals.Animal;
-import com.company.config.parsers.IslandPropParser;
+import com.company.config.properties.IslandProperties;
 import lombok.Getter;
 
 import java.util.*;
@@ -27,8 +27,8 @@ public class Island {
     }
 
     private static void initializeIslandSize() {
-        xAmountOfCells = IslandPropParser.getInstance().getXAmountOfCells();
-        yAmountOfCells = IslandPropParser.getInstance().getYAmountOfCells();
+        xAmountOfCells = IslandProperties.getXAmountOfCells();
+        yAmountOfCells = IslandProperties.getYAmountOfCells();
     }
     private static void initializeCells() {
         cells = new Cell[xAmountOfCells][yAmountOfCells];

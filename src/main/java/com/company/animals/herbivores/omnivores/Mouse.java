@@ -4,8 +4,13 @@ import com.company.animals.AnimalType;
 import com.company.island.Cell;
 
 public class Mouse extends Omnivore {
-    public Mouse(Cell cell, AnimalType type) {
-        super(cell, type);
+    public Mouse(Cell cell) {
+        super(cell);
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.MOUSE;
     }
 
     @Override

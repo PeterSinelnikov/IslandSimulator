@@ -1,5 +1,6 @@
 package com.company.config;
 
+import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 public abstract class ConfigParser {
     protected String filePath;
+    @Getter
     protected List<CSVRecord> properties;
 
     protected void initializeProperties() {

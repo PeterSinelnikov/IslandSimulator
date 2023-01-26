@@ -3,13 +3,14 @@ package com.company.island;
 import com.company.animals.Animal;
 import com.company.animals.carnivores.Carnivore;
 import com.company.animals.AnimalType;
+import com.company.config.properties.IslandProperties;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 public class Cell {
-    public static final int MAX_AMOUNT_OF_PLANTS = 200;
+    public static final int MAX_AMOUNT_OF_PLANTS = IslandProperties.getMaxQuantityOfPlantsPerCell();
     private final int x;
     private final int y;
     @Getter

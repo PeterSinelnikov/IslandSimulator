@@ -1,9 +1,9 @@
-package com.company.services;
+package com.company.engine;
 
 import com.company.animals.Animal;
-import com.company.animals.AnimalFactory.Factory;
+import com.company.animals.animalFactory.Factory;
 import com.company.animals.AnimalType;
-import com.company.config.parsers.AnimalFieldsParser;
+import com.company.config.properties.AnimalProperties;
 import com.company.island.Island;
 
 
@@ -19,7 +19,7 @@ public class Initializer {
 
     private static void initializeAnimals() {
         for (AnimalType type : AnimalType.values()) {
-            int quantityOfAnimals = AnimalFieldsParser.getInstance().getInitialQuantity(type);
+            int quantityOfAnimals = AnimalProperties.getInitialQuantity(type);
             for (int i = 0; i < quantityOfAnimals; i++) {
                 Animal animal = Factory.getInstance().createAnimal(type, Island.getRandomCell());
                 animal.setBirthDay(dayCounter);

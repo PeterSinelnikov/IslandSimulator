@@ -1,4 +1,4 @@
-﻿type,weight,max_amount_per_cell,speed,required_amount_of_food,initial_quantity,max_daily_weight_loss,max_days_without_food
+﻿type,weight,max_quantity_per_cell,speed,required_amount_of_food,initial_quantity,max_daily_weight_loss,max_days_without_food
 wolf,50,30,3,8,30,1.5,10
 boa,15,30,1,3,40,0.75,6
 fox,8,30,2,2,50,0.3,8

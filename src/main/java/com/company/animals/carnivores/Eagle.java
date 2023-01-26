@@ -4,8 +4,14 @@ import com.company.animals.AnimalType;
 import com.company.island.Cell;
 
 public class Eagle extends Carnivore{
-    public Eagle(Cell cell, AnimalType type) {
-        super(cell, type);
+
+    public Eagle(Cell cell) {
+        super(cell);
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.EAGLE;
     }
 
     @Override

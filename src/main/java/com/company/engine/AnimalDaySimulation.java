@@ -1,11 +1,11 @@
-package com.company.services;
+package com.company.engine;
 
 import com.company.animals.Animal;
 import com.company.animals.AnimalType;
-import com.company.config.parsers.AnimalFieldsParser;
+import com.company.config.properties.AnimalProperties;
 import com.company.island.Island;
 
-public class AnimalSimulationService implements Runnable {
+public class AnimalDaySimulation implements Runnable {
 
     public static final double MAX_WEIGHT_LOSS = 0.70;
 
@@ -30,9 +30,9 @@ public class AnimalSimulationService implements Runnable {
 
     private void dealWithCorpses(Animal animal) {
         if (animal.isDead()) {
-            animal.setCorpseLifeCounter(animal.getCorpseLifeCounter() + 1);
+            animal.setCorpseDayCounter(animal.getCorpseDayCounter() + 1);
         }
-        if (animal.getCorpseLifeCounter() > 1) {
+        if (animal.getCorpseDayCounter() > 1) {
             eraseExpiredAnimalCorpse(animal);
         }
     }
@@ -59,8 +59,7 @@ public class AnimalSimulationService implements Runnable {
     }
 
     private boolean checkLifeCondition(Animal animal) {
-        double configWeight = AnimalFieldsParser.getInstance()
-                .getWeight(animal.getType());
+        double configWeight = AnimalProperties.getWeight(animal.getType());
         if (animal.getWeight() < (configWeight * MAX_WEIGHT_LOSS)
                 && !animal.isDead()) {
             animal.die();

@@ -1,4 +1,4 @@
-package com.company.services;
+package com.company.engine;
 
 import com.company.animals.Animal;
 import com.company.animals.carnivores.Carnivore;
@@ -27,7 +27,7 @@ public class StatsPrinter {
     private static void printKilledAnimals() {
         long killedAnimals = Island.getAllAnimals().stream()
                 .filter(Animal::isDead)
-                .filter(animal -> animal.getCorpseLifeCounter() == 0)
+                .filter(animal -> animal.getCorpseDayCounter() == 0)
                 .filter(animal -> animal.getOffenderName() != null)
                 .count();
         System.out.printf("animals killed by carnivores and omnivores: %s\n", killedAnimals);
@@ -45,7 +45,7 @@ public class StatsPrinter {
     private static void printDiedFromStarvation() {
         long diedFromStarvation = Island.getAllAnimals().stream()
                 .filter(Animal::isDead)
-                .filter(animal -> animal.getCorpseLifeCounter() == 0)
+                .filter(animal -> animal.getCorpseDayCounter() == 0)
                 .filter(animal -> animal.getOffenderName() == null)
                 .count();
         System.out.printf("died from starvation: %s\n", diedFromStarvation);

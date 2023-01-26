@@ -5,8 +5,13 @@ import com.company.island.Cell;
 
 public class Fox extends Carnivore{
 
-    public Fox(Cell cell, AnimalType type) {
-        super(cell, type);
+    public Fox(Cell cell) {
+        super(cell);
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.FOX;
     }
 
     @Override

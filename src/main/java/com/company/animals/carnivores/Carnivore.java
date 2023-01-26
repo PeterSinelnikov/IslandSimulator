@@ -1,10 +1,9 @@
 package com.company.animals.carnivores;
 
 import com.company.animals.Animal;
-import com.company.animals.AnimalType;
 import com.company.animals.herbivores.Herbivore;
-import com.company.config.parsers.AnimalFieldsParser;
-import com.company.config.parsers.AttackingPropParser;
+import com.company.config.properties.AnimalProperties;
+import com.company.config.properties.AttackingProperties;
 import com.company.island.Cell;
 
 import java.util.Comparator;
@@ -14,15 +13,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Carnivore extends Animal {
 
-    public Carnivore(Cell cell, AnimalType type) {
-        super(cell, type);
+    public Carnivore(Cell cell) {
+        super(cell);
     }
 
     @Override
     protected Cell chooseWhereToGo(List<Cell> availableCellsToGo) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return availableCellsToGo.stream()
-                .filter(cell -> cell.countType(getType()) < getMaxAmountPerCell())
+                .filter(cell -> cell.countType(getType()) < AnimalProperties.getMaxAmountPerCell(this.getType()))
                 .filter(this::hasChancesToKill)
                 .findAny()
                 .orElseGet(() -> availableCellsToGo
@@ -31,18 +30,19 @@ public abstract class Carnivore extends Animal {
 
     @Override
     public void eat() {
-        if (lookForDeadHerbivore().isPresent()) {
-            Animal victim = lookForDeadHerbivore().get();
+        Optional<Animal> deadAnimal = lookForDeadHerbivore();
+        if (deadAnimal.isPresent()) {
+            Animal victim = deadAnimal.get();
             feedOnDeadAnimal(victim);
         } else {
             this.getCell().getAnimals().stream()
                     .filter(animal -> animal instanceof Herbivore)
-                    .filter(victimAnimal -> AttackingPropParser.getInstance()
+                    .filter(victimAnimal -> AttackingProperties
                             .getAttackingProperty(this.getType(), victimAnimal.getType()) > 0)
                     .max(Comparator.comparingDouble(Animal::getWeight))
                     .ifPresentOrElse(
                             this::tryToKill,
-                            () -> setWeight(getWeight() - getMaxAmountPerCell())
+                            () -> setWeight(getWeight() - AnimalProperties.getMaxDailyWeightLoss(this.getType()))
                     );
         }
     }
@@ -57,33 +57,34 @@ public abstract class Carnivore extends Animal {
 
     private void tryToKill(Animal victimAnimal) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        double attackingProperty = AttackingPropParser.getInstance()
+        double attackingProperty = AttackingProperties
                 .getAttackingProperty(this.getType(), victimAnimal.getType());
         victimAnimal.setOffenderName(this);
         if (random.nextDouble() < attackingProperty) {
             victimAnimal.die();
             feedOnDeadAnimal(victimAnimal);
         } else {
-            setWeight(getWeight() - getMaxDailyWeightLoss());
+            setWeight(getWeight() - AnimalProperties.getMaxDailyWeightLoss(this.getType()));
         }
     }
 
     private void feedOnDeadAnimal(Animal victimAnimal) {
         double consumedFood;
-        if (victimAnimal.getWeight() < getRequiredAmountOfFood()) {
+        if (victimAnimal.getWeight() < AnimalProperties.getRequiredAmountOfFood(this.getType())) {
             consumedFood = victimAnimal.getWeight();
-            double weightLoss = (getRequiredAmountOfFood() - consumedFood) / getRequiredAmountOfFood() * getMaxDailyWeightLoss();
+            double weightLoss = (AnimalProperties.getRequiredAmountOfFood(this.getType()) - consumedFood)
+                    / AnimalProperties.getRequiredAmountOfFood(this.getType()) * AnimalProperties.getMaxDailyWeightLoss(this.getType());
             setWeight(getWeight() - weightLoss);
         } else {
-            setWeight(AnimalFieldsParser.getInstance().getWeight(getType()));
-            consumedFood = getRequiredAmountOfFood();
+            setWeight(AnimalProperties.getWeight(getType()));
+            consumedFood = AnimalProperties.getRequiredAmountOfFood(this.getType());
         }
         victimAnimal.setWeight(victimAnimal.getWeight() - consumedFood);
     }
 
     private boolean hasChancesToKill(Cell cell) {
         return cell.getAnimals().stream()
-                .anyMatch(animal -> AttackingPropParser.getInstance()
+                .anyMatch(animal -> AttackingProperties
                         .getAttackingProperty(this.getType(), animal.getType()) > 0);
     }
 }

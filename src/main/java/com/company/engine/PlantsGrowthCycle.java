@@ -1,14 +1,14 @@
-package com.company.services;
+package com.company.engine;
 
-import com.company.config.parsers.IslandPropParser;
+import com.company.config.properties.IslandProperties;
 import com.company.island.Cell;
 import com.company.island.Island;
 
 import java.util.Arrays;
 
-public class PlantsGrowthService implements Runnable {
+public class PlantsGrowthCycle implements Runnable {
 
-    protected static final double PLANTS_GROWTH_MULTIPLIER = IslandPropParser.getInstance().getPlantsGrowthFactor();
+    protected static final double PLANTS_GROWTH_MULTIPLIER = IslandProperties.getPlantsGrowthFactor();
 
     @Override
     public void run() {

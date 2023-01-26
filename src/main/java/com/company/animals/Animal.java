@@ -1,7 +1,7 @@
 package com.company.animals;
 
-import com.company.animals.AnimalFactory.Factory;
-import com.company.config.parsers.AnimalFieldsParser;
+import com.company.animals.animalFactory.Factory;
+import com.company.config.properties.AnimalProperties;
 import com.company.island.Cell;
 import com.company.island.Island;
 import lombok.Getter;
@@ -13,25 +13,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Animal {
     @Getter
-    private final AnimalType type;
-    @Getter
     @Setter
     private double weight;
-    @Getter
-    private int maxAmountPerCell;
-    private int speed;
     private boolean isAlive = true;
     @Getter
     @Setter
-    private int corpseLifeCounter;
-    @Getter
-    private double requiredAmountOfFood;
-    @Getter
-    private double maxDailyWeightLoss;
+    private int corpseDayCounter;
     @Getter
     private Cell cell;
     private boolean hasOffspring;
-    private boolean isMale;
+    protected boolean isFemale;
     @Getter
     @Setter
     private Animal offenderName;
@@ -39,21 +30,16 @@ public abstract class Animal {
     @Setter
     private int birthDay;
 
-    public Animal(Cell cell, AnimalType type) {
+    public Animal(Cell cell) {
         this.cell = cell;
-        this.type = type;
         this.cell.getAnimals().add(this);
         initializeFields();
     }
 
     private void initializeFields() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        weight = AnimalFieldsParser.getInstance().getWeight(type);
-        maxAmountPerCell = AnimalFieldsParser.getInstance().getMaxAmountPerCell(type);
-        speed = AnimalFieldsParser.getInstance().getSpeed(type);
-        requiredAmountOfFood = AnimalFieldsParser.getInstance().getRequiredAmountOfFood(type);
-        maxDailyWeightLoss = AnimalFieldsParser.getInstance().getMaxDailyWeightLoss(type);
-        isMale = random.nextBoolean();
+        weight = AnimalProperties.getWeight(getType());
+        isFemale = random.nextBoolean();
     }
 
     public abstract void eat();
@@ -61,15 +47,21 @@ public abstract class Animal {
     public void move() {
         Cell currentCell = this.cell;
         List<Cell> availableCellsToGo = getAvailableCellsToGo();
-        this.cell = chooseWhereToGo(availableCellsToGo);
-        if (this.cell != currentCell) {
-            currentCell.getAnimals().remove(this);
-            this.cell.getAnimals().add(this);
+        Cell chosenCell = chooseWhereToGo(availableCellsToGo);
+        if (chosenCell != currentCell) {
+            this.cell = chosenCell;
+            // правильно ли синхронизироваться по листу?
+            synchronized (currentCell.getAnimals()) {
+                currentCell.getAnimals().remove(this);
+            }
+            synchronized (this.cell.getAnimals()) {
+                this.cell.getAnimals().add(this);
+            }
         }
     }
 
     public void reproduce() {
-        if (isFemale()) {
+        if (this.isFemale) {
             return;
         }
         if (this.hasOffspring) {
@@ -77,13 +69,13 @@ public abstract class Animal {
         }
         List<Animal> animalsReadyToReproduce = this.cell.getAnimals().stream()
                 .filter(animal -> animal.isAlive)
-                .filter(animal -> animal.getType() == this.type)
-                .filter(Animal::isFemale)
+                .filter(animal -> animal.getType() == this.getType())
+                .filter(animal -> animal.isFemale)
                 .toList();
         if (animalsReadyToReproduce.size() > 0) {
-            Factory.getInstance().createAnimal(this.type,this.cell);
+            Factory.getInstance().createAnimal(this.getType(), this.cell);
             this.hasOffspring = true;
-            animalsReadyToReproduce.get(0).hasOffspring = true;
+            animalsReadyToReproduce.stream().findAny().get().hasOffspring = true;
         }
     }
 
@@ -97,9 +89,9 @@ public abstract class Animal {
     private List<Cell> getAvailableCellsToGo() {
         Cell[][] allCells = Island.getCells();
         List<Cell> availableCellsToGo = new ArrayList<>();
-        for (int i = -speed; i <= speed; i++) {
-            for (int j = -speed; j <= speed; j++) {
-                if (Math.abs(i) + Math.abs(j) > 4) {
+        for (int i = -getSpeed(); i <= getSpeed(); i++) {
+            for (int j = -getSpeed(); j <= getSpeed(); j++) {
+                if (Math.abs(i) + Math.abs(j) > getSpeed()) {
                     continue;
                 }
                 int currentX = this.cell.getX() + i;
@@ -116,15 +108,17 @@ public abstract class Animal {
         return availableCellsToGo;
     }
 
+    public int getSpeed() {
+        return AnimalProperties.getSpeed(this.getType());
+    }
+
+    public abstract AnimalType getType();
+
     public void die() {
         isAlive = false;
     }
 
     public boolean isDead() {
         return !isAlive;
-    }
-
-    public boolean isFemale() {
-        return !isMale;
     }
 }

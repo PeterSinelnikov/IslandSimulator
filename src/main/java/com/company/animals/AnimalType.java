@@ -22,5 +22,4 @@ public enum AnimalType {
     AnimalType(int index) {
         this.index = index;
     }
-
 }
